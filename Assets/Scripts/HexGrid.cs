@@ -12,7 +12,7 @@ public class HexGrid : MonoBehaviour
     private Canvas gridCanvas;
 
     private HexMesh hexMesh;
-    
+
     public Color defaultColor = Color.white;
     public Color touchedColor = Color.magenta;
 
@@ -38,9 +38,9 @@ public class HexGrid : MonoBehaviour
     private void CreateCell(int x, int z, int i)
     {
         Vector3 position;
-        position.x = (x + z * 0.5f - z / 2) * (HexMetrics.INNER_RADIUS * 2f);
+        position.x = (x + z * 0.5f - z / 2) * (HexMetrics.InnerRadius * 2f);
         position.y = 0;
-        position.z = z * (HexMetrics.OUTER_RADIUS * 1.5f);
+        position.z = z * (HexMetrics.OuterRadius * 1.5f);
 
         HexCell cell = cells[i] = Instantiate(cellPrefab);
         Transform cellTransform = cell.transform;
@@ -49,6 +49,32 @@ public class HexGrid : MonoBehaviour
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
         cell.color = defaultColor;
 
+        if (x > 0)
+        {
+            cell.SetNeighbor(HexDirection.W, cells[i - 1]);
+        }
+
+        if (z > 0)
+        {
+            // 偶数行
+            if ((z & 1) == 0)
+            {
+                cell.SetNeighbor(HexDirection.SE, cells[i - width]);
+                if (x > 0)
+                {
+                    cell.SetNeighbor(HexDirection.SW, cells[i - width - 1]);
+                }
+            }
+            else
+            {
+                cell.SetNeighbor(HexDirection.SW, cells[i - width]);
+                if (x < width - 1)
+                {
+                    cell.SetNeighbor(HexDirection.SE, cells[i - width + 1]);
+                }
+            }
+        }
+
         Text label = Instantiate(cellLabelPrefab);
         var labelTransform = label.rectTransform;
         labelTransform.SetParent(gridCanvas.transform, false);
@@ -56,7 +82,7 @@ public class HexGrid : MonoBehaviour
         label.text = cell.coordinates.ToStringOnSeparateLines();
     }
 
-    public void ColorCell(Vector3 position,Color color)
+    public void ColorCell(Vector3 position, Color color)
     {
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
