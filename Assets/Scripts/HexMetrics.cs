@@ -19,6 +19,9 @@ public static class HexMetrics
     public const float noiseScale = 0.003f;
     public const float elevationPerturbStrength = 1.5f;
 
+    // 设置网格块块的大小为五乘五，所以每一个网格块是25个单元格 
+    public const int chunkSizeX = 5, chunkSizeZ = 5;
+
     public static Vector3[] corners =
     {
         new Vector3(0f, 0f, outerRadius),
@@ -71,17 +74,22 @@ public static class HexMetrics
         return Color.Lerp(a, b, h);
     }
 
-    public static HexEdgeType GetEdgeType (int elevation1, int elevation2) {
-        if (elevation1 == elevation2) {
+    public static HexEdgeType GetEdgeType(int elevation1, int elevation2)
+    {
+        if (elevation1 == elevation2)
+        {
             return HexEdgeType.Flat;
         }
+
         int delta = elevation2 - elevation1;
-        if (delta == 1 || delta == -1) {
+        if (delta == 1 || delta == -1)
+        {
             return HexEdgeType.Slope;
         }
+
         return HexEdgeType.Cliff;
     }
-    
+
     public static Vector4 SampleNoise(Vector3 position)
     {
         return noiseSource.GetPixelBilinear(
@@ -89,6 +97,4 @@ public static class HexMetrics
             position.z * noiseScale
         );
     }
-    
-    
 }
