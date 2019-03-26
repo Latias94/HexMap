@@ -49,7 +49,7 @@ public class HexCoordinates
             float dZ = Mathf.Abs(-x - y - iZ);
             if (dX > dY && dX > dZ)
             {
-                iX = -iX - iZ;
+                iX = -iY - iZ;
             }
             else if (dZ > dY)
             {
